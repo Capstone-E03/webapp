@@ -16,13 +16,13 @@ export default function RiwayatPage() {
         <table className="min-w-full text-sm text-left text-gray-700">
           <thead className="text-xs text-gray-800 uppercase bg-gray-50">
             <tr>
-              <th scope="col" className="px-6 py-3 font-semibold">
+              <th scope="col" className="px-6 py-3 font-semibold text-center">
                 Waktu
               </th>
-              <th scope="col" className="px-6 py-3 font-semibold">
+              <th scope="col" className="px-6 py-3 font-semibold text-center">
                 Kesegaran
               </th>
-              <th scope="col" className="px-6 py-3 font-semibold">
+              <th scope="col" className="px-6 py-3 font-semibold text-center">
                 Pengawetan
               </th>
             </tr>
@@ -30,9 +30,9 @@ export default function RiwayatPage() {
           <tbody>
             {historyData.map((item, index) => (
               <tr key={index} className="bg-white border-b hover:bg-gray-50">
-                <td className="px-6 py-4">{item.time}</td>
-                <td className="px-6 py-4">{item.freshness}</td>
-                <td className="px-6 py-4">{item.preservation}</td>
+                <td className="px-6 py-4 text-center">{item.time}</td>
+                <td className="px-6 py-4 text-center">{item.freshness}</td>
+                <td className="px-6 py-4 text-center">{item.preservation}</td>
               </tr>
             ))}
           </tbody>
