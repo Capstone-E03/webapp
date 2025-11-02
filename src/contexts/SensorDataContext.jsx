@@ -11,6 +11,8 @@ const defaultData = Object.freeze({
   suhu: "-",
   humidity: "-",
   ph: "-",
+  fresh: "-",      
+  preservation: "-",
 });
 
 const Ctx = createContext({
@@ -31,6 +33,8 @@ function normalize(msg) {
     suhu: p.T ?? p.suhu ?? "-",
     humidity: p.RH ?? p.humidity ?? "-",
     ph: p.pH ?? p.ph ?? "-",
+    fresh: p.fresh ?? "-",   
+    preservation: p.preservation ?? "-",
   };
 }
 
@@ -65,6 +69,7 @@ export function SensorDataProvider({ children }) {
       toastOnce.current.up = false;
       // socket.io akan auto-reconnect; flag kita atur saat 'reconnect_attempt'
     };
+    
 
     const onReconnectAttempt = () => setReconnecting(true);
     const onReconnect = () => setReconnecting(false);
@@ -74,11 +79,26 @@ export function SensorDataProvider({ children }) {
       setLastSeenAt(new Date());
     };
 
+    const onFreshness = (msg) => {
+      const code = msg?.fresh ?? msg?.message?.fresh ?? "-";
+      setData((prev) => ({ ...prev, fresh: code }));
+      setLastSeenAt(new Date());
+    };
+
+    const onPreservation = (msg) => {
+      const code = msg?.preservation ?? msg?.message?.preservation ?? "-";
+      setData((prev) => ({ ...prev, preservation: code }));
+      setLastSeenAt(new Date());
+    };
+
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("reconnect_attempt", onReconnectAttempt);
     socket.on("reconnect", onReconnect);
     socket.on("sensorData", onSensor);
+    socket.on("freshness", onFreshness);
+    socket.on("preservation", onPreservation);
+
 
     // Mulai koneksi awal:
     connectSocket();
@@ -98,6 +118,8 @@ export function SensorDataProvider({ children }) {
       socket.off("reconnect_attempt", onReconnectAttempt);
       socket.off("reconnect", onReconnect);
       socket.off("sensorData", onSensor);
+      socket.off("freshness", onFreshness);
+      socket.off("preservation", onPreservation);
       window.removeEventListener("online", goOnline);
       window.removeEventListener("offline", goOffline);
       // jangan disconnect di unmount provider (biasanya provider hidup sepanjang app)

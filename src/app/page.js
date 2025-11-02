@@ -1,7 +1,9 @@
 "use client";
 
-import LiveData from "@/components/LiveData";
 import { useSensorData } from "@/contexts/SensorDataContext";
+
+import LiveData from "@/components/LiveData";
+import Status from "@/components/Status";
 
 export default function Home() {
   const {
@@ -22,7 +24,9 @@ export default function Home() {
             Status:{" "}
             <span
               className={
-                connected ? "text-green-600 font-semibold" : "text-red-600 font-semibold"
+                connected
+                  ? "text-green-600 font-semibold"
+                  : "text-red-600 font-semibold"
               }
             >
               {connected ? "Terhubung" : "Terputus"}
@@ -66,23 +70,7 @@ export default function Home() {
       </section>
 
       {/* Kondisi Section (placeholder) */}
-      <section className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Kondisi</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-6 bg-emerald-100 rounded-lg shadow text-center">
-            <h3 className="text-lg font-bold text-emerald-800 mb-2">
-              Status Kesegaran
-            </h3>
-            <p className="text-2xl font-semibold text-emerald-900">Segar</p>
-          </div>
-          <div className="p-6 bg-teal-100 rounded-lg shadow text-center">
-            <h3 className="text-lg font-bold text-teal-800 mb-2">
-              Status Pengawetan
-            </h3>
-            <p className="text-2xl font-semibold text-teal-900">Aman</p>
-          </div>
-        </div>
-      </section>
+      <Status />
     </>
   );
 }
