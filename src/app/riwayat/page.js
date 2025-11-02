@@ -1,14 +1,55 @@
-// src/app/riwayat/page.js
+async function getHistory() {
+  try {
+    // Fetch both datasets in parallel
+    const [classRes, presRes] = await Promise.all([
+      fetch("http://localhost:3001/api/classifications", { cache: "no-store" }),
+      fetch("http://localhost:3001/api/preservations", { cache: "no-store" })
+    ]);
 
-export default function RiwayatPage() {
+    if (!classRes.ok) throw new Error("Failed to fetch classifications");
+    if (!presRes.ok) throw new Error("Failed to fetch preservations");
+
+    const classifications = await classRes.json();
+    const preservations = await presRes.json();
+
+    const combinedData = classifications.map((item, index) => {
+      return {
+        _id: item._id, // Use classification's ID as the key
+        timestamp: item.timestamp,
+        freshnessResult: item.result,
+        // Get the matching preservation result. Use '?.' for safety.
+        preservationResult: preservations[index]?.result || "??", // Show '??' if no matching data
+      };
+    });
+
+    return combinedData;
+
+  } catch (error) {
+    console.error("Error fetching history:", error);
+    return []; // Return an empty array on error
+  }
+}
+
+function mapFreshness(result) {
+  const freshnessMap = {
+    KS: "Kurang Segar",
+    S: "Segar",
+    B: "Busuk",
+  };
+  return freshnessMap[result] || result;
+}
+
+function mapPreservation(result) {
+  const preservationMap = {
+    Ya: "Ya",
+    Tidak: "Tidak",
+  };
+  return preservationMap[result] || result;
+}
+
+export default async function RiwayatPage() {
   // Sample data for the table
-  const historyData = [
-    { time: "2023-10-27 10:30:00", freshness: "Segar", preservation: "Ya" },
-    { time: "2023-10-27 09:15:00", freshness: "Segar", preservation: "Ya" },
-    { time: "2023-10-26 18:00:00", freshness: "Kurang Segar", preservation: "Tidak" },
-    { time: "2023-10-26 15:45:00", freshness: "Segar", preservation: "Ya" },
-    { time: "2023-10-25 12:00:00", freshness: "Busuk", preservation: "Tidak" },
-  ];
+  const historyData = await getHistory();
 
   return (
     <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
@@ -28,13 +69,36 @@ export default function RiwayatPage() {
             </tr>
           </thead>
           <tbody>
-            {historyData.map((item, index) => (
-              <tr key={index} className="bg-white border-b hover:bg-gray-50">
-                <td className="px-6 py-4 text-center">{item.time}</td>
-                <td className="px-6 py-4 text-center">{item.freshness}</td>
-                <td className="px-6 py-4 text-center">{item.preservation}</td>
+            {historyData.length > 0 ? (
+              historyData.map((item) => (
+                <tr
+                  key={item._id}
+                  className="bg-white border-b hover:bg-gray-50"
+                >
+                  <td className="px-6 py-4 text-center">
+                    {/* Column 1: Waktu */}
+                    {new Date(item.timestamp).toLocaleString("id-ID", {
+                      dateStyle: "long",
+                      timeStyle: "medium",
+                    })}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    {/* Column 2: Kesegaran */}
+                    {mapFreshness(item.freshnessResult)}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    {/* Column 3: Pengawetan */}
+                    {mapPreservation(item.preservationResult)}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr className="bg-white border-b">
+                <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+                  Tidak ada data riwayat.
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
