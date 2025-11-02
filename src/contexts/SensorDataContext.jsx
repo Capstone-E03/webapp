@@ -84,6 +84,7 @@ export function SensorDataProvider({ children }) {
       ph: msg?.message?.pH ?? msg?.pH ?? prev.ph,
       }));
       setLastSeenAt(new Date());
+      console.log("Received sensor data:", msg);
     };
 
     const onFreshness = (msg) => {
@@ -92,6 +93,7 @@ export function SensorDataProvider({ children }) {
       fresh: msg?.fresh ?? msg?.message?.fresh ?? prev.fresh
       }));
       setLastSeenAt(new Date());
+      console.log("Received freshness data:", msg);
     };
 
     const onPreservation = (msg) => {
@@ -100,6 +102,7 @@ export function SensorDataProvider({ children }) {
       preservation: msg?.preservation ?? msg?.message?.preservation ?? prev.preservation
       }));
       setLastSeenAt(new Date());
+      console.log("Received preservation data:", msg);
     };
 
     socket.on("connect", onConnect);
