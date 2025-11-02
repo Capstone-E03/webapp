@@ -77,6 +77,7 @@ export function SensorDataProvider({ children }) {
     const onSensor = (msg) => {
       setData((prev) => ({ ...prev, ...normalize(msg) }));
       setLastSeenAt(new Date());
+      console.log("Received sensor data:", msg);
     };
 
     const onFreshness = (msg) => {
