@@ -12,9 +12,9 @@ export default function RiwayatPage() {
 
   return (
     <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
         <table className="min-w-full text-sm text-left text-gray-700">
-          <thead className="text-xs text-gray-800 uppercase bg-gray-50">
+          <thead className="text-xs uppercase bg-gray-100 text-gray-700">
             <tr>
               <th scope="col" className="px-6 py-3 font-semibold text-center">
                 Waktu
