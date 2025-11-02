@@ -16,25 +16,34 @@ export default function LiveData() {
     socket.on("sensorData", (msg) => {
         console.log("📩 Received:", msg);
         setData({
-            gas: msg.message.gas ?? "-",
-            suhu: msg.message.suhu ?? "-",
-            ph: msg.message.ph ?? "-",
+            gas: "-",
+            suhu: msg.message.temp ?? "-",       
+            ph: "-",
+            humidity: msg.message.humidity ?? "-",
+            gas2: "-"
         });
     });
-
 
     return () => socket.disconnect();
   }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div className="p-6 bg-gray-200 rounded-md text-center">
+      <div className="p-6 bg-blue-100 rounded-md text-center">
         <h3 className="text-lg font-bold text-gray-700 mb-2">Gas</h3>
         <p className="text-2xl font-semibold text-gray-700">{data.gas}</p>
       </div>
       <div className="p-6 bg-gray-200 rounded-md text-center">
+        <h3 className="text-lg font-bold text-gray-700 mb-2">Gas</h3>
+        <p className="text-2xl font-semibold text-gray-700">{data.gas2}</p>
+      </div>
+      <div className="p-6 bg-gray-200 rounded-md text-center">
         <h3 className="text-lg font-bold text-gray-700 mb-2">Suhu</h3>
         <p className="text-2xl font-semibold text-gray-700">{data.suhu}</p>
+      </div>
+      <div className="p-6 bg-gray-200 rounded-md text-center">
+        <h3 className="text-lg font-bold text-gray-700 mb-2">Kelembaban</h3>
+        <p className="text-2xl font-semibold text-gray-700">{data.humidity}</p>
       </div>
       <div className="p-6 bg-gray-200 rounded-md text-center">
         <h3 className="text-lg font-bold text-gray-700 mb-2">pH</h3>
