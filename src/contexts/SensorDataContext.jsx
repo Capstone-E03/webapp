@@ -2,10 +2,9 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { getSocket } from "@/lib/socket";
+import { getSocket, connectSocket, disconnectSocket } from "@/lib/socket";
 import { toast } from "react-hot-toast";
 
-/** Bentuk state yang konsisten ke seluruh UI */
 const defaultData = Object.freeze({
   gasAmonia: "-",
   gasMetana: "-",
@@ -14,17 +13,18 @@ const defaultData = Object.freeze({
   ph: "-",
 });
 
-const SensorDataContext = createContext({
+const Ctx = createContext({
   data: defaultData,
-  lastMessageRaw: null,
   connected: false,
+  reconnecting: false,
+  lastSeenAt: null,
+  lastDisconnectReason: null,
+  connectNow: () => {},
+  disconnectNow: () => {},
 });
 
-/** Normalisasi payload dari backend → state UI */
 function normalize(msg) {
-  // Terima dua kemungkinan bentuk: { message: {...} } atau flat {...}
   const p = msg?.message ?? msg ?? {};
-
   return {
     gasAmonia: p.mq135_ppm ?? p.gasAmonia ?? "-",
     gasMetana: p.mq2_ppm ?? p.gasMetana ?? "-",
@@ -37,50 +37,95 @@ function normalize(msg) {
 export function SensorDataProvider({ children }) {
   const [data, setData] = useState(defaultData);
   const [connected, setConnected] = useState(false);
-  const [lastMessageRaw, setLastMessageRaw] = useState(null);
+  const [reconnecting, setReconnecting] = useState(false);
+  const [lastSeenAt, setLastSeenAt] = useState(null);
+  const [lastDisconnectReason, setLastDisconnectReason] = useState(null);
 
-  const connectedToastShown = useRef(false);
+  const toastOnce = useRef({ up: false });
 
   useEffect(() => {
     const socket = getSocket();
 
     const onConnect = () => {
       setConnected(true);
-      if (!connectedToastShown.current) {
+      setReconnecting(false);
+      setLastDisconnectReason(null);
+      if (!toastOnce.current.up) {
         toast.success("Sistem terhubung!");
-        connectedToastShown.current = true;
+        toastOnce.current.up = true;
       }
     };
-    const onDisconnect = () => {
+
+    const onDisconnect = (reason) => {
       setConnected(false);
+      setReconnecting(false);
+      setLastDisconnectReason(reason || "unknown");
+      setLastSeenAt(new Date());
       toast.error("Koneksi terputus.");
+      toastOnce.current.up = false;
+      // socket.io akan auto-reconnect; flag kita atur saat 'reconnect_attempt'
     };
+
+    const onReconnectAttempt = () => setReconnecting(true);
+    const onReconnect = () => setReconnecting(false);
+
     const onSensor = (msg) => {
-      setLastMessageRaw(msg);
       setData((prev) => ({ ...prev, ...normalize(msg) }));
+      setLastSeenAt(new Date());
     };
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
+    socket.on("reconnect_attempt", onReconnectAttempt);
+    socket.on("reconnect", onReconnect);
     socket.on("sensorData", onSensor);
+
+    // Mulai koneksi awal:
+    connectSocket();
+
+    // Reaksi ke online/offline browser:
+    const goOnline = () => connectSocket();
+    const goOffline = () => {
+      setReconnecting(false);
+      // biarkan socket yg memutus / handle sendiri; info UI cukup
+    };
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
+      socket.off("reconnect_attempt", onReconnectAttempt);
+      socket.off("reconnect", onReconnect);
       socket.off("sensorData", onSensor);
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+      // jangan disconnect di unmount provider (biasanya provider hidup sepanjang app)
     };
   }, []);
 
-  const value = useMemo(() => ({ data, connected, lastMessageRaw }), [data, connected, lastMessageRaw]);
+  const connectNow = () => connectSocket();
+  const disconnectNow = () => {
+    setReconnecting(false);
+    disconnectSocket();
+  };
 
-  return (
-    <SensorDataContext.Provider value={value}>
-      {children}
-    </SensorDataContext.Provider>
+  const value = useMemo(
+    () => ({
+      data,
+      connected,
+      reconnecting,
+      lastSeenAt,
+      lastDisconnectReason,
+      connectNow,
+      disconnectNow,
+    }),
+    [data, connected, reconnecting, lastSeenAt, lastDisconnectReason]
   );
+
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
-/** Hook konsumsi data sensor */
 export function useSensorData() {
-  return useContext(SensorDataContext);
+  return useContext(Ctx);
 }

@@ -8,13 +8,6 @@ export default function LiveData() {
 
   return (
     <div className="space-y-4">
-      <div className="text-sm">
-        Status:{" "}
-        <span className={connected ? "text-green-600" : "text-red-600"}>
-          {connected ? "Terhubung" : "Terputus"}
-        </span>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <Card color="bg-blue-100" title="Amonia" value={data.gasAmonia} />
         <Card color="bg-indigo-100" title="Gas Metana" value={data.gasMetana} />
