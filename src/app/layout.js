@@ -5,6 +5,7 @@ import "./globals.css";
 import Sidebar from "@/components/sidebar.js";
 import HamburgerButton from "@/components/HamburgerButton.js";
 import { useState } from "react";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <Toaster position="top-right" reverseOrder={false} />
         <div className="min-h-screen bg-gray-50">
           <Sidebar
             isOpen={isSidebarOpen}

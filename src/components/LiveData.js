@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import { toast } from "react-hot-toast";
 
 export default function LiveData() {
   const [data, setData] = useState({ gas: "-", suhu: "-", ph: "-" });
@@ -11,6 +12,7 @@ export default function LiveData() {
 
     socket.on("connect", () => {
       console.log("✅ Connected to backend via socket.io");
+      toast.success("Sistem terhubung!");
     });
 
     socket.on("sensorData", (msg) => {
