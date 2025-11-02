@@ -6,6 +6,7 @@ import Sidebar from "@/components/sidebar.js";
 import HamburgerButton from "@/components/HamburgerButton.js";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
+import { SensorDataProvider } from "@/contexts/SensorDataContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,20 +28,22 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Toaster position="top-right" reverseOrder={false} />
-        <div className="min-h-screen bg-gray-50">
-          <Sidebar
-            isOpen={isSidebarOpen}
-            onClose={() => setIsSidebarOpen(false)}
-          />
-          <div className="flex flex-col flex-1 md:ml-64">
-            <header className="flex items-center justify-between p-4 bg-white border-b md:hidden">
-              <span className="text-xl font-bold">My App</span>
-              <HamburgerButton onClick={() => setIsSidebarOpen(true)} />
-            </header>
-            <main className="p-4 sm:p-6 lg:p-10">{children}</main>
+        <SensorDataProvider>
+          <Toaster position="top-right" reverseOrder={false} />
+          <div className="min-h-screen bg-gray-50">
+            <Sidebar
+              isOpen={isSidebarOpen}
+              onClose={() => setIsSidebarOpen(false)}
+            />
+            <div className="flex flex-col flex-1 md:ml-64">
+              <header className="flex items-center justify-between p-4 bg-white border-b md:hidden">
+                <span className="text-xl font-bold">My App</span>
+                <HamburgerButton onClick={() => setIsSidebarOpen(true)} />
+              </header>
+              <main className="p-4 sm:p-6 lg:p-10">{children}</main>
+            </div>
           </div>
-        </div>
+        </SensorDataProvider>
       </body>
     </html>
   );

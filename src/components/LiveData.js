@@ -1,56 +1,29 @@
+// app/components/LiveData.jsx
 "use client";
 
-import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
-import { toast } from "react-hot-toast";
+import { useSensorData } from "@/contexts/SensorDataContext";
 
 export default function LiveData() {
-  const [data, setData] = useState({ gas: "-", suhu: "-", ph: "-" });
-
-  useEffect(() => {
-    const socket = io("http://127.0.0.1:3001");
-
-    socket.on("connect", () => {
-      console.log("✅ Connected to backend via socket.io");
-      toast.success("Sistem terhubung!");
-    });
-
-    socket.on("sensorData", (msg) => {
-        console.log("📩 Received:", msg);
-        setData({
-            gas: "-",
-            suhu: msg.message.temp ?? "-",       
-            ph: "-",
-            humidity: msg.message.humidity ?? "-",
-            gas2: "-"
-        });
-    });
-
-    return () => socket.disconnect();
-  }, []);
+  const { data } = useSensorData();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-      <div className="p-6 bg-blue-100 rounded-md text-center">
-        <h3 className="text-lg font-bold text-gray-700 mb-2">Gas</h3>
-        <p className="text-2xl font-semibold text-gray-700">{data.gas}</p>
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+        <Card color="bg-blue-100" title="Amonia" value={data.gasAmonia} />
+        <Card color="bg-indigo-100" title="Gas Metana" value={data.gasMetana} />
+        <Card color="bg-red-100" title="Suhu" value={data.suhu} />
+        <Card color="bg-orange-100" title="Kelembaban" value={data.humidity} />
+        <Card color="bg-yellow-100" title="pH" value={data.ph} />
       </div>
-      <div className="p-6 bg-indigo-100 rounded-md text-center">
-        <h3 className="text-lg font-bold text-gray-700 mb-2">Gas</h3>
-        <p className="text-2xl font-semibold text-gray-700">{data.gas2}</p>
-      </div>
-      <div className="p-6 bg-red-100 rounded-md text-center">
-        <h3 className="text-lg font-bold text-gray-700 mb-2">Suhu</h3>
-        <p className="text-2xl font-semibold text-gray-700">{data.suhu}</p>
-      </div>
-      <div className="p-6 bg-orange-100 rounded-md text-center">
-        <h3 className="text-lg font-bold text-gray-700 mb-2">Kelembaban</h3>
-        <p className="text-2xl font-semibold text-gray-700">{data.humidity}</p>
-      </div>
-      <div className="p-6 bg-yellow-100 rounded-md text-center">
-        <h3 className="text-lg font-bold text-gray-700 mb-2">pH</h3>
-        <p className="text-2xl font-semibold text-gray-700">{data.ph}</p>
-      </div>
+    </div>
+  );
+}
+
+function Card({ color, title, value }) {
+  return (
+    <div className={`p-6 ${color} rounded-md text-center`}>
+      <h3 className="text-lg font-bold text-gray-700 mb-2">{title}</h3>
+      <p className="text-2xl font-semibold text-gray-700">{value}</p>
     </div>
   );
 }
