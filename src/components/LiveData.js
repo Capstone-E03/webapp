@@ -4,7 +4,7 @@
 import { useSensorData } from "@/contexts/SensorDataContext";
 
 export default function LiveData() {
-  const { data, connected } = useSensorData();
+  const { data } = useSensorData();
 
   return (
     <div className="space-y-4">

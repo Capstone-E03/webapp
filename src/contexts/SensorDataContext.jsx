@@ -75,20 +75,30 @@ export function SensorDataProvider({ children }) {
     const onReconnect = () => setReconnecting(false);
 
     const onSensor = (msg) => {
-      setData((prev) => ({ ...prev, ...normalize(msg) }));
+      setData((prev) => ({
+      ...prev,
+      gasAmonia: msg?.message?.mq135_ppm ?? msg?.mq135_ppm ?? prev.gasAmonia,
+      gasMetana: msg?.message?.mq2_ppm ?? msg?.mq2_ppm ?? prev.gasMetana,
+      suhu: msg?.message?.T ?? msg?.T ?? prev.suhu,
+      humidity: msg?.message?.RH ?? msg?.RH ?? prev.humidity,
+      ph: msg?.message?.pH ?? msg?.pH ?? prev.ph,
+      }));
       setLastSeenAt(new Date());
-      console.log("Received sensor data:", msg);
     };
 
     const onFreshness = (msg) => {
-      const code = msg?.fresh ?? msg?.message?.fresh ?? "-";
-      setData((prev) => ({ ...prev, fresh: code }));
+      setData((prev) => ({
+      ...prev,
+      fresh: msg?.fresh ?? msg?.message?.fresh ?? prev.fresh
+      }));
       setLastSeenAt(new Date());
     };
 
     const onPreservation = (msg) => {
-      const code = msg?.preservation ?? msg?.message?.preservation ?? "-";
-      setData((prev) => ({ ...prev, preservation: code }));
+      setData((prev) => ({
+      ...prev,
+      preservation: msg?.preservation ?? msg?.message?.preservation ?? prev.preservation
+      }));
       setLastSeenAt(new Date());
     };
 
