@@ -33,6 +33,7 @@ async function getHistory() {
 function mapFreshness(result) {
   const freshnessMap = {
     KS: "Kurang Segar",
+    SS: "Sangat Segar",
     S: "Segar",
     B: "Busuk",
   };
