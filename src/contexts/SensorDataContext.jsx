@@ -21,6 +21,7 @@ const Ctx = createContext({
   reconnecting: false,
   lastSeenAt: null,
   lastDisconnectReason: null,
+  mqttConnectedAt: null,
   connectNow: () => {},
   disconnectNow: () => {},
 });
@@ -44,6 +45,7 @@ export function SensorDataProvider({ children }) {
   const [reconnecting, setReconnecting] = useState(false);
   const [lastSeenAt, setLastSeenAt] = useState(null);
   const [lastDisconnectReason, setLastDisconnectReason] = useState(null);
+  const [mqttConnectedAt, setMqttConnectedAt] = useState(null);
 
   const toastOnce = useRef({ up: false });
 
@@ -105,6 +107,16 @@ export function SensorDataProvider({ children }) {
       console.log("Received preservation data:", msg);
     };
 
+    const onMqttStatus = (status) => {
+      console.log("Received MQTT Status:", status);
+      if (status.connectedAt) {
+        // Backend mengirim timestamp sebagai string, kita ubah jadi objek Date
+        setMqttConnectedAt(new Date(status.connectedAt));
+      } else {
+        setMqttConnectedAt(null);
+      }
+    };
+
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("reconnect_attempt", onReconnectAttempt);
@@ -112,6 +124,7 @@ export function SensorDataProvider({ children }) {
     socket.on("sensorData", onSensor);
     socket.on("freshness", onFreshness);
     socket.on("preservation", onPreservation);
+    socket.on("mqttStatus", onMqttStatus);
 
 
     // Mulai koneksi awal:
@@ -134,6 +147,7 @@ export function SensorDataProvider({ children }) {
       socket.off("sensorData", onSensor);
       socket.off("freshness", onFreshness);
       socket.off("preservation", onPreservation);
+      socket.off("mqttStatus", onMqttStatus);
       window.removeEventListener("online", goOnline);
       window.removeEventListener("offline", goOffline);
       // jangan disconnect di unmount provider (biasanya provider hidup sepanjang app)
@@ -153,10 +167,11 @@ export function SensorDataProvider({ children }) {
       reconnecting,
       lastSeenAt,
       lastDisconnectReason,
+      mqttConnectedAt,
       connectNow,
       disconnectNow,
     }),
-    [data, connected, reconnecting, lastSeenAt, lastDisconnectReason]
+    [data, connected, reconnecting, lastSeenAt, lastDisconnectReason, mqttConnectedAt]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
