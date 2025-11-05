@@ -30,14 +30,14 @@ export default function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <SensorDataProvider>
           <Toaster position="top-right" reverseOrder={false} />
-          <div className="min-h-screen bg-gray-50">
+          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
             <Sidebar
               isOpen={isSidebarOpen}
               onClose={() => setIsSidebarOpen(false)}
             />
             <div className="flex flex-col flex-1 md:ml-64">
-              <header className="flex items-center justify-between p-4 bg-white border-b md:hidden">
-                <span className="text-xl font-bold">My App</span>
+              <header className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700 md:hidden transition-colors">
+                <span className="text-xl font-bold text-gray-900 dark:text-white">Fish Monitor</span>
                 <HamburgerButton onClick={() => setIsSidebarOpen(true)} />
               </header>
               <main className="p-4 sm:p-6 lg:p-10">{children}</main>

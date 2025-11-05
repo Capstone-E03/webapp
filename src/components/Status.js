@@ -130,10 +130,10 @@ const Status = () => {
   const durationMs = mqttConnectedAt ? now.getTime() - mqttConnectedAt.getTime() : 0;
 
   return (
-    <section className="p-8 bg-white border border-gray-200 rounded-xl shadow-lg">
+    <section className="p-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg transition-colors">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Klasifikasi AI</h2>
-        <p className="text-sm text-gray-600">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Klasifikasi AI</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full font-medium text-xs border border-purple-200">
             <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-2h2v2zm0-4H9V5h2v4z"/>

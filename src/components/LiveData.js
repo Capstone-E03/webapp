@@ -114,8 +114,8 @@ function MetricCard({ color, textColor, valueColor, title, value, unit, data, li
                   content={({ payload }) => {
                     if (!payload || !payload[0]) return null;
                     return (
-                      <div className="bg-white px-3 py-2 rounded shadow-lg border border-gray-200">
-                        <p className="text-sm font-semibold text-gray-900">
+                      <div className="bg-white dark:bg-gray-800 px-3 py-2 rounded shadow-lg border border-gray-200 dark:border-gray-600">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                           {payload[0].value.toFixed(2)} {unit}
                         </p>
                       </div>

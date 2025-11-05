@@ -135,49 +135,49 @@ export default async function RiwayatPage() {
 
       {/* Stats Cards - Mobile Friendly */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
-          <p className="text-xs text-gray-600 font-semibold uppercase">Total Entries</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{historyData.length}</p>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border-l-4 border-blue-500 transition-colors">
+          <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold uppercase">Total Entries</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{historyData.length}</p>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow border-l-4 border-emerald-500">
-          <p className="text-xs text-gray-600 font-semibold uppercase">Segar (SS/S)</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border-l-4 border-emerald-500 transition-colors">
+          <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold uppercase">Segar (SS/S)</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
             {historyData.filter(d => d.freshnessResult === "SS" || d.freshnessResult === "S").length}
           </p>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow border-l-4 border-teal-500">
-          <p className="text-xs text-gray-600 font-semibold uppercase">Penyimpanan Baik</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border-l-4 border-teal-500 transition-colors">
+          <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold uppercase">Penyimpanan Baik</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
             {historyData.filter(d => d.preservationResult === "SB" || d.preservationResult === "B").length}
           </p>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow border-l-4 border-purple-500">
-          <p className="text-xs text-gray-600 font-semibold uppercase">Last Update</p>
-          <p className="text-sm font-bold text-gray-900 mt-1">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border-l-4 border-purple-500 transition-colors">
+          <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold uppercase">Last Update</p>
+          <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mt-1">
             {historyData.length > 0 ? formatDateTime(historyData[0].timestamp).timeStr : "N/A"}
           </p>
         </div>
       </div>
 
       {/* Table Container */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700 transition-colors">
         {/* Desktop Table */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600">
               <tr>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                   Waktu
                 </th>
-                <th scope="col" className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                   Kesegaran Ikan
                 </th>
-                <th scope="col" className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                   Kondisi Penyimpanan
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {historyData.length > 0 ? (
                 historyData.map((item) => {
                   const freshStyle = getFreshnessStyle(item.freshnessResult);
@@ -185,7 +185,7 @@ export default async function RiwayatPage() {
                   const { dateStr, timeStr } = formatDateTime(item.timestamp);
 
                   return (
-                    <tr key={item._id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={item._id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -194,8 +194,8 @@ export default async function RiwayatPage() {
                             </svg>
                           </div>
                           <div>
-                            <div className="text-sm font-semibold text-gray-900">{dateStr}</div>
-                            <div className="text-xs text-gray-500">{timeStr}</div>
+                            <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{dateStr}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{timeStr}</div>
                           </div>
                         </div>
                       </td>
@@ -234,7 +234,7 @@ export default async function RiwayatPage() {
         </div>
 
         {/* Mobile Cards */}
-        <div className="md:hidden divide-y divide-gray-200">
+        <div className="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
           {historyData.length > 0 ? (
             historyData.map((item) => {
               const freshStyle = getFreshnessStyle(item.freshnessResult);
@@ -242,7 +242,7 @@ export default async function RiwayatPage() {
               const { dateStr, timeStr } = formatDateTime(item.timestamp);
 
               return (
-                <div key={item._id} className="p-4 hover:bg-gray-50 transition-colors">
+                <div key={item._id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                   {/* Timestamp */}
                   <div className="flex items-center gap-2 mb-3">
                     <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -251,22 +251,22 @@ export default async function RiwayatPage() {
                       </svg>
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-gray-900">{dateStr}</div>
-                      <div className="text-xs text-gray-500">{timeStr}</div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{dateStr}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{timeStr}</div>
                     </div>
                   </div>
 
                   {/* Badges */}
                   <div className="space-y-2">
                     <div>
-                      <p className="text-xs text-gray-600 font-semibold mb-1">Kesegaran:</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-1">Kesegaran:</p>
                       <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold border-2 ${freshStyle.bg} ${freshStyle.text} ${freshStyle.border}`}>
                         <span>{freshStyle.icon}</span>
                         {freshStyle.label}
                       </span>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-600 font-semibold mb-1">Penyimpanan:</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-1">Penyimpanan:</p>
                       <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold border-2 ${presStyle.bg} ${presStyle.text} ${presStyle.border}`}>
                         <span>{presStyle.icon}</span>
                         {presStyle.label}
