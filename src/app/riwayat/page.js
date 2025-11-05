@@ -42,8 +42,10 @@ function mapFreshness(result) {
 
 function mapPreservation(result) {
   const preservationMap = {
-    Ya: "Ya",
-    Tidak: "Tidak",
+    BR: "Buruk",
+    KB: "Kurang Baik",
+    B: "Baik",
+    SB: "Sangat Baik",
   };
   return preservationMap[result] || result;
 }
