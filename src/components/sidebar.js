@@ -29,16 +29,17 @@ export default function Sidebar({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Overlay for mobile */}
+      {/* Overlay for mobile & tablet portrait */}
       <div
-        className={`fixed inset-0 z-20 bg-black bg-opacity-50 transition-opacity md:hidden ${
+        className={`fixed inset-0 z-20 bg-black bg-opacity-50 transition-opacity lg:hidden ${
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={onClose}
+        aria-hidden="true"
       ></div>
 
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 z-30 h-full w-64 bg-white dark:bg-gradient-to-b dark:from-gray-950 dark:to-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-2xl transform transition-transform md:translate-x-0 ${
+      <aside className={`fixed top-0 left-0 z-30 h-full w-64 bg-white dark:bg-gradient-to-b dark:from-gray-950 dark:to-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-2xl transform transition-transform lg:translate-x-0 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}>
         {/* Header */}

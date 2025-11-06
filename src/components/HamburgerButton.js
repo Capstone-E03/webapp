@@ -2,7 +2,7 @@ export default function HamburgerButton({ onClick }) {
   return (
     <button
       onClick={onClick}
-      className="p-2 text-gray-600 rounded-md md:hidden hover:bg-gray-100"
+      className="p-2 text-gray-600 dark:text-gray-300 rounded-md lg:hidden hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
       aria-label="Open sidebar"
     >
       <svg

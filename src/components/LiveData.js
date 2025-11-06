@@ -44,7 +44,7 @@ export default function LiveData() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
         <MetricCard
           color="bg-gradient-to-br from-blue-50 to-blue-100"
           textColor="text-blue-800"
@@ -96,16 +96,16 @@ function MetricCard({ color, textColor, valueColor, title, value, unit, data, li
 
   return (
     <div className={`${color} rounded-xl shadow-lg overflow-hidden transition-all hover:shadow-xl border border-opacity-20`}>
-      <div className="p-6">
-        <h3 className={`text-sm font-semibold ${textColor} mb-2 uppercase tracking-wider`}>
+      <div className="p-4 sm:p-6">
+        <h3 className={`text-xs sm:text-sm font-semibold ${textColor} mb-2 uppercase tracking-wider`}>
           {title}
         </h3>
-        <div className="flex items-baseline gap-2 mb-4">
-          <p className={`text-4xl font-bold ${valueColor}`}>{value}</p>
-          <span className={`text-lg ${textColor} font-medium`}>{unit}</span>
+        <div className="flex items-baseline gap-1 sm:gap-2 mb-3 sm:mb-4">
+          <p className={`text-3xl sm:text-4xl font-bold ${valueColor} truncate`}>{value}</p>
+          <span className={`text-base sm:text-lg ${textColor} font-medium flex-shrink-0`}>{unit}</span>
         </div>
         {chartData.length > 0 && (
-          <div className="h-20 -mx-2">
+          <div className="h-16 sm:h-20 -mx-2">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <YAxis hide domain={["dataMin - 5", "dataMax + 5"]} />

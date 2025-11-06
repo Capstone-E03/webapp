@@ -35,8 +35,8 @@ export default function RootLayout({ children }) {
               isOpen={isSidebarOpen}
               onClose={() => setIsSidebarOpen(false)}
             />
-            <div className="flex flex-col flex-1 md:ml-64">
-              <header className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700 md:hidden transition-colors">
+            <div className="flex flex-col flex-1 lg:ml-64">
+              <header className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700 lg:hidden transition-colors">
                 <span className="text-xl font-bold text-gray-900 dark:text-white">Fish Monitor</span>
                 <HamburgerButton onClick={() => setIsSidebarOpen(true)} />
               </header>
