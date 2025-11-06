@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/sidebar.js";
 import HamburgerButton from "@/components/HamburgerButton.js";
+import ChatBot from "@/components/ChatBot.js";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { SensorDataProvider } from "@/contexts/SensorDataContext";
@@ -100,6 +101,9 @@ export default function RootLayout({ children }) {
               <main className="p-4 sm:p-6 lg:p-10">{children}</main>
             </div>
           </div>
+
+          {/* Floating ChatBot - accessible from all pages */}
+          <ChatBot />
         </SensorDataProvider>
       </body>
     </html>
