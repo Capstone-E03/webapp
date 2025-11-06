@@ -52,3 +52,59 @@ body {
   color: #fecaca !important;
   border-color: #991b1b !important;
 }
+
+/* Fish mascot animations */
+@keyframes swim {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-3px) rotate(-5deg);
+  }
+  75% {
+    transform: translateX(3px) rotate(5deg);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes bubble-float {
+  0% {
+    transform: translateY(0) scale(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-40px) scale(1);
+    opacity: 0;
+  }
+}
+
+.fish-swim {
+  animation: swim 3s ease-in-out infinite;
+}
+
+.fish-bounce {
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.bubble {
+  animation: bubble-float 2s ease-in-out infinite;
+}
+
+.bubble:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.bubble:nth-child(3) {
+  animation-delay: 1s;
+}

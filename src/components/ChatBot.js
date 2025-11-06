@@ -145,33 +145,73 @@ export default function ChatBot() {
 
   return (
     <>
-      {/* Floating Chat Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`fixed z-50 transition-all duration-300 ${
-          isOpen ? "bottom-[80%] sm:bottom-[480px] right-4 sm:right-6" : "bottom-4 sm:bottom-6 right-4 sm:right-6"
-        } w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full shadow-2xl flex items-center justify-center group`}
-        aria-label="Toggle chatbot"
+      {/* Floating Chat Button - Fish Mascot */}
+      <div
+        className={`fixed z-50 transition-all duration-500 ${
+          isOpen
+            ? "bottom-[calc(100vh-140px)] sm:bottom-[580px] right-4 sm:right-6"
+            : "bottom-4 sm:bottom-6 right-4 sm:right-6"
+        }`}
       >
-        {isOpen ? (
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        ) : (
-          <>
-            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`relative transition-all duration-300 ${
+            isOpen ? "scale-90" : "scale-100 hover:scale-110"
+          } w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 via-cyan-400 to-blue-600 hover:from-blue-600 hover:via-cyan-500 hover:to-blue-700 rounded-full shadow-2xl flex items-center justify-center group overflow-visible`}
+          aria-label="Toggle chatbot"
+        >
+          {/* Bubbles effect */}
+          {!isOpen && (
+            <div className="absolute inset-0 overflow-visible pointer-events-none">
+              <div className="bubble absolute bottom-12 left-4 w-2 h-2 bg-white/40 rounded-full"></div>
+              <div className="bubble absolute bottom-10 left-8 w-1.5 h-1.5 bg-white/30 rounded-full"></div>
+              <div className="bubble absolute bottom-11 left-6 w-1 h-1 bg-white/30 rounded-full"></div>
+            </div>
+          )}
+
+          {isOpen ? (
+            <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg
+              className="w-9 h-9 sm:w-11 sm:h-11 text-white fish-swim group-hover:fish-bounce"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {/* Fish body */}
               <path
+                d="M18 12c0-2.5-2-4.5-4.5-4.5-1.5 0-2.8.7-3.5 1.8C9.2 8.2 8 7.5 6.5 7.5 4 7.5 2 9.5 2 12s2 4.5 4.5 4.5c1.5 0 2.7-.7 3.5-1.8.7 1.1 2 1.8 3.5 1.8 2.5 0 4.5-2 4.5-4.5z"
+              />
+              {/* Fish tail */}
+              <path
+                d="M2 12c-.5-1-.5-2 0-3L0 8l.5 4L0 16l2-1c-.5-1-.5-2 0-3z"
+              />
+              {/* Fish eye */}
+              <circle cx="12" cy="11" r="1" fill="#1e40af" />
+              {/* Fish fins */}
+              <path
+                d="M10 14c-.5.5-1 .8-1.5.8M10 10c-.5-.5-1-.8-1.5-.8"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                fill="none"
+              />
+              {/* Top fin */}
+              <path
+                d="M13.5 8.5l.5-2 .5 2z"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
               />
             </svg>
-            {/* Notification dot - can be shown when there's new info */}
-            {/* <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span> */}
-          </>
-        )}
-      </button>
+          )}
+
+          {/* Pulse ring effect */}
+          {!isOpen && (
+            <span className="absolute inset-0 rounded-full bg-blue-400 animate-ping opacity-20"></span>
+          )}
+        </button>
+      </div>
 
       {/* Chat Panel */}
       <div
