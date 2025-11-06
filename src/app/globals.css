@@ -26,3 +26,29 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Toast notification variables */
+:root {
+  --toast-bg: #ffffff;
+  --toast-text: #1f2937;
+  --toast-border: #e5e7eb;
+}
+
+.dark {
+  --toast-bg: #1f2937;
+  --toast-text: #f9fafb;
+  --toast-border: #374151;
+}
+
+/* Dark mode toast overrides */
+.dark .dark-mode-success {
+  background: #064e3b !important;
+  color: #d1fae5 !important;
+  border-color: #065f46 !important;
+}
+
+.dark .dark-mode-error {
+  background: #7f1d1d !important;
+  color: #fecaca !important;
+  border-color: #991b1b !important;
+}

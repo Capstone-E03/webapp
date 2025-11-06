@@ -29,7 +29,64 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <SensorDataProvider>
-          <Toaster position="top-right" reverseOrder={false} />
+          <Toaster
+            position="bottom-right"
+            reverseOrder={false}
+            gutter={8}
+            containerStyle={{
+              bottom: 20,
+              right: 20,
+            }}
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: 'var(--toast-bg)',
+                color: 'var(--toast-text)',
+                padding: '16px',
+                borderRadius: '12px',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                border: '1px solid var(--toast-border)',
+                fontSize: '14px',
+                fontWeight: '500',
+                maxWidth: '400px',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#10b981',
+                  secondary: '#ffffff',
+                },
+                style: {
+                  background: '#ecfdf5',
+                  color: '#065f46',
+                  border: '1px solid #a7f3d0',
+                },
+                className: 'dark-mode-success',
+              },
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#ffffff',
+                },
+                style: {
+                  background: '#fef2f2',
+                  color: '#991b1b',
+                  border: '1px solid #fecaca',
+                },
+                className: 'dark-mode-error',
+              },
+              loading: {
+                iconTheme: {
+                  primary: '#3b82f6',
+                  secondary: '#ffffff',
+                },
+                style: {
+                  background: '#eff6ff',
+                  color: '#1e40af',
+                  border: '1px solid #bfdbfe',
+                },
+              },
+            }}
+          />
           <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
             <Sidebar
               isOpen={isSidebarOpen}

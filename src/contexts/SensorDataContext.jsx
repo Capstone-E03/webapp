@@ -57,7 +57,9 @@ export function SensorDataProvider({ children }) {
       setReconnecting(false);
       setLastDisconnectReason(null);
       if (!toastOnce.current.up) {
-        toast.success("Sistem terhubung!");
+        toast.success("Sistem terhubung ke server!", {
+          duration: 3000,
+        });
         toastOnce.current.up = true;
       }
     };
@@ -67,7 +69,9 @@ export function SensorDataProvider({ children }) {
       setReconnecting(false);
       setLastDisconnectReason(reason || "unknown");
       setLastSeenAt(new Date());
-      toast.error("Koneksi terputus.");
+      toast.error("Koneksi terputus dari server", {
+        duration: 4000,
+      });
       toastOnce.current.up = false;
       // socket.io akan auto-reconnect; flag kita atur saat 'reconnect_attempt'
     };
