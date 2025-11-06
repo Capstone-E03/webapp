@@ -14,7 +14,11 @@ export default function ChatBot() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const messagesEndRef = useRef(null);
+  const chatPanelRef = useRef(null);
   const { data } = useSensorData();
 
   const scrollToBottom = () => {
@@ -53,12 +57,91 @@ export default function ChatBot() {
     }, 1000);
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
+
+  // Dragging handlers
+  const handleMouseDown = (e) => {
+    if (e.target.closest('.chat-header-drag')) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.clientX - position.x,
+        y: e.clientY - position.y,
+      });
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging) {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+
+      // Get viewport dimensions
+      const maxX = window.innerWidth - (chatPanelRef.current?.offsetWidth || 420);
+      const maxY = window.innerHeight - (chatPanelRef.current?.offsetHeight || 450);
+
+      // Constrain position within viewport
+      setPosition({
+        x: Math.max(-maxX, Math.min(0, newX)),
+        y: Math.max(-maxY, Math.min(0, newY)),
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleTouchStart = (e) => {
+    if (e.target.closest('.chat-header-drag')) {
+      const touch = e.touches[0];
+      setIsDragging(true);
+      setDragStart({
+        x: touch.clientX - position.x,
+        y: touch.clientY - position.y,
+      });
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (isDragging) {
+      const touch = e.touches[0];
+      const newX = touch.clientX - dragStart.x;
+      const newY = touch.clientY - dragStart.y;
+
+      const maxX = window.innerWidth - (chatPanelRef.current?.offsetWidth || 420);
+      const maxY = window.innerHeight - (chatPanelRef.current?.offsetHeight || 450);
+
+      setPosition({
+        x: Math.max(-maxX, Math.min(0, newX)),
+        y: Math.max(-maxY, Math.min(0, newY)),
+      });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('touchmove', handleTouchMove);
+      document.addEventListener('touchend', handleTouchEnd);
+
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('touchmove', handleTouchMove);
+        document.removeEventListener('touchend', handleTouchEnd);
+      };
+    }
+  }, [isDragging, dragStart, position]);
 
   return (
     <>
@@ -66,8 +149,8 @@ export default function ChatBot() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`fixed z-50 transition-all duration-300 ${
-          isOpen ? "bottom-[480px] right-6" : "bottom-6 right-6"
-        } w-14 h-14 bg-gradient-to-br from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full shadow-2xl flex items-center justify-center group`}
+          isOpen ? "bottom-[80%] sm:bottom-[480px] right-4 sm:right-6" : "bottom-4 sm:bottom-6 right-4 sm:right-6"
+        } w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full shadow-2xl flex items-center justify-center group`}
         aria-label="Toggle chatbot"
       >
         {isOpen ? (
@@ -76,7 +159,7 @@ export default function ChatBot() {
           </svg>
         ) : (
           <>
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -92,15 +175,28 @@ export default function ChatBot() {
 
       {/* Chat Panel */}
       <div
-        className={`fixed bottom-6 right-6 z-40 w-[380px] sm:w-[420px] transition-all duration-300 ${
-          isOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-8 pointer-events-none"
+        ref={chatPanelRef}
+        className={`fixed z-40 transition-all duration-300 ${
+          isOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"
         }`}
+        style={{
+          bottom: `${24 - position.y}px`,
+          right: `${24 - position.x}px`,
+          width: 'calc(100vw - 32px)',
+          maxWidth: '420px',
+          height: 'calc(100vh - 100px)',
+          maxHeight: '550px',
+        }}
       >
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col h-[450px]">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col h-full">
+          {/* Header - Draggable */}
+          <div
+            className="chat-header-drag bg-gradient-to-r from-blue-600 to-purple-600 p-3 sm:p-4 flex items-center gap-2 sm:gap-3 cursor-move select-none touch-none"
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+          >
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -109,34 +205,46 @@ export default function ChatBot() {
                 />
               </svg>
             </div>
-            <div className="flex-1">
-              <h3 className="text-white font-semibold text-sm">Fish Monitor Assistant</h3>
-              <p className="text-white/80 text-xs">Tanya saya tentang monitoring ikan</p>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-white font-semibold text-xs sm:text-sm truncate">Fish Monitor Assistant</h3>
+              <p className="text-white/80 text-[10px] sm:text-xs truncate">Tanya saya tentang monitoring ikan</p>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="w-8 h-8 rounded-lg hover:bg-white/20 transition-colors flex items-center justify-center"
-            >
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+            <div className="flex gap-1 flex-shrink-0">
+              <button
+                onClick={() => setPosition({ x: 0, y: 0 })}
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg hover:bg-white/20 transition-colors flex items-center justify-center"
+                title="Reset posisi"
+              >
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg hover:bg-white/20 transition-colors flex items-center justify-center"
+                title="Tutup chat"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-gray-50 dark:bg-gray-900">
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
+                  className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 ${
                     msg.role === "user"
                       ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white"
                       : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700"
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                  <p className="text-xs sm:text-sm whitespace-pre-wrap break-words">{msg.content}</p>
                   <p
-                    className={`text-xs mt-1 ${
+                    className={`text-[10px] sm:text-xs mt-1 ${
                       msg.role === "user" ? "text-white/70" : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
@@ -161,23 +269,23 @@ export default function ChatBot() {
           </div>
 
           {/* Input */}
-          <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+          <div className="p-3 sm:p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
             <div className="flex gap-2">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyDown}
                 placeholder="Ketik pertanyaan..."
                 disabled={isLoading}
-                className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-3 py-2 sm:px-4 sm:py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isLoading}
-                className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="px-3 py-2 sm:px-4 sm:py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                 </svg>
               </button>
