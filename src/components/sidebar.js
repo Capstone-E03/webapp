@@ -38,11 +38,11 @@ export default function Sidebar({ isOpen, onClose }) {
       ></div>
 
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 z-30 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 shadow-2xl transform transition-transform md:translate-x-0 ${
+      <aside className={`fixed top-0 left-0 z-30 h-full w-64 bg-white dark:bg-gradient-to-b dark:from-gray-950 dark:to-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-2xl transform transition-transform md:translate-x-0 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}>
         {/* Header */}
-        <div className="p-6 border-b border-gray-700">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,8 +50,8 @@ export default function Sidebar({ isOpen, onClose }) {
               </svg>
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Fish Monitor</h2>
-              <p className="text-xs text-gray-400">IoT Dashboard</p>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Fish Monitor</h2>
+              <p className="text-xs text-gray-600 dark:text-gray-400">IoT Dashboard</p>
             </div>
           </div>
         </div>
@@ -68,10 +68,10 @@ export default function Sidebar({ isOpen, onClose }) {
                 className={`flex items-center gap-3 px-4 py-3 font-medium rounded-lg transition-all group ${
                   isActive
                     ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
-                    : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
-                <span className={`${isActive ? "text-white" : "text-gray-400 group-hover:text-white"}`}>
+                <span className={`${isActive ? "text-white" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"}`}>
                   {item.icon}
                 </span>
                 <span>{item.label}</span>
@@ -84,12 +84,12 @@ export default function Sidebar({ isOpen, onClose }) {
         </nav>
 
         {/* Footer Info */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700">
-          <div className="flex items-center gap-2 text-xs text-gray-400">
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-transparent">
+          <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span>System Active</span>
           </div>
-          <p className="mt-2 text-xs text-gray-500">
+          <p className="mt-2 text-xs text-gray-500 dark:text-gray-500">
             Fuzzy Logic AI • STM32
           </p>
         </div>
