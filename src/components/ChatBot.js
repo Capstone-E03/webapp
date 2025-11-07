@@ -44,17 +44,43 @@ export default function ChatBot() {
     setInput("");
     setIsLoading(true);
 
-    // TODO: Replace with actual API call to your chatbot backend
-    // For now, this is a placeholder response
-    setTimeout(() => {
-      const botResponse = {
-        role: "assistant",
-        content: `Terima kasih atas pertanyaan Anda. Ini adalah contoh respons. Nanti ini akan terhubung dengan AI chatbot yang dapat menjawab pertanyaan tentang:\n\n• Data sensor real-time (NH3: ${data.gasAmonia}, CH4: ${data.gasMetana}, Suhu: ${data.suhu}°C)\n• Klasifikasi kesegaran: ${data.fresh}\n• Kondisi penyimpanan: ${data.preservation}\n• Informasi umum tentang monitoring ikan\n\nSilakan implementasikan API endpoint untuk chatbot.`,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, botResponse]);
+    try {
+      const response = await fetch(
+        // Pastikan URL ini sesuai dengan backend Anda
+        (process.env.NEXT_PUBLIC_SOCKET_URL || "http://127.0.0.1:3001") + "/api/chat", 
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: userMessage.content }), // Kirim pesan pengguna
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const botResponseData = await response.json(); // Harusnya { role: "assistant", content: "..." }
+
+      setMessages((prev) => [
+        ...prev,
+        { ...botResponseData, timestamp: new Date() },
+      ]);
+
+    } catch (error) {
+      console.error("Chatbot API error:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "Maaf, terjadi kesalahan saat menghubungkan ke asisten AI. Silakan coba lagi nanti.",
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleKeyDown = (e) => {
