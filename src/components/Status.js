@@ -3,21 +3,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { useSensorData } from "@/contexts/SensorDataContext";
 
-function FishIcon({ className = "" }) {
-  return (
-    <svg
-      className={`w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 ${className}`} // Ukuran disesuaikan
-      fill="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path d="M18 12c0-2.5-2-4.5-4.5-4.5-1.5 0-2.8.7-3.5 1.8C9.2 8.2 8 7.5 6.5 7.5 4 7.5 2 9.5 2 12s2 4.5 4.5 4.5c1.5 0 2.7-.7 3.5-1.8.7 1.1 2 1.8 3.5 1.8 2.5 0 4.5-2 4.5-4.5z" />
-      <path d="M2 12c-.5-1-.5-2 0-3L0 8l.5 4L0 16l2-1c-.5-1-.5-2 0-3z" />
-      <circle cx="12" cy="11" r="1" fill="#fff" opacity="0.8" />
-      <path d="M10 14c-.5.5-1 .8-1.5.8M10 10c-.5-.5-1-.8-1.5-.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-      <path d="M13.5 8.5l.5-2 .5 2z" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 function mapFresh(code) {
   switch ((code || "-").toUpperCase()) {
