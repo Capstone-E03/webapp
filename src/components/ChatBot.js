@@ -3,15 +3,50 @@
 import { useState, useRef, useEffect } from "react";
 import { useSensorData } from "@/contexts/SensorDataContext";
 
+// --- PERUBAHAN DIMULAI DI SINI ---
+
+// 1. Definisikan pesan default di luar komponen
+const defaultMessage = {
+  role: "assistant",
+  content: "Halo! Saya asisten virtual Fish Monitor. Saya dapat membantu menjawab pertanyaan tentang monitoring kesegaran ikan dan data sensor. Ada yang bisa saya bantu?",
+  timestamp: new Date(),
+};
+
+// 2. Buat fungsi untuk memuat state awal dari localStorage
+const loadInitialState = () => {
+  // Cek jika window (browser) tidak ada, misal saat server-side rendering
+  if (typeof window === "undefined") {
+    return [defaultMessage];
+  }
+  
+  try {
+    const savedHistory = localStorage.getItem("chatHistory");
+    if (!savedHistory) {
+      return [defaultMessage];
+    }
+    
+    const parsedHistory = JSON.parse(savedHistory);
+    
+    // Pastikan timestamp diubah kembali menjadi objek Date saat memuat
+    return parsedHistory.map(msg => ({
+      ...msg,
+      timestamp: new Date(msg.timestamp),
+    }));
+  } catch (error) {
+    console.error("Gagal memuat riwayat chat:", error);
+    return [defaultMessage]; // Kembali ke default jika ada error
+  }
+};
+
+// --- AKHIR PERUBAHAN INISIALISASI ---
+
+
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      role: "assistant",
-      content: "Halo! Saya asisten virtual Fish Monitor. Saya dapat membantu menjawab pertanyaan tentang monitoring kesegaran ikan dan data sensor. Ada yang bisa saya bantu?",
-      timestamp: new Date(),
-    },
-  ]);
+  
+  // 3. Gunakan fungsi 'loadInitialState' untuk useState
+  const [messages, setMessages] = useState(loadInitialState);
+  
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -31,29 +66,45 @@ export default function ChatBot() {
     }
   }, [messages, isOpen]);
 
+  // --- PERUBAHAN DIMULAI DI SINI ---
+
+  // 4. Tambahkan useEffect baru untuk MENYIMPAN ke localStorage setiap kali 'messages' berubah
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        // Kita simpan 'messages' setiap kali ada pembaruan
+        localStorage.setItem("chatHistory", JSON.stringify(messages));
+      } catch (error) {
+        console.error("Gagal menyimpan riwayat chat:", error);
+      }
+    }
+  }, [messages]); // Dependensi array ini akan memicu penyimpanan setiap 'messages' berubah
+
+  // --- AKHIR PERUBAHAN ---
+
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
     const userMessage = {
       role: "user",
       content: input,
-      timestamp: new Date(),
+      timestamp: new Date(), // Pastikan selalu gunakan 'new Date()'
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
+    // Memanggil API backend (Kode ini sudah benar dari langkah kita sebelumnya)
     try {
       const response = await fetch(
-        // Pastikan URL ini sesuai dengan backend Anda
         (process.env.NEXT_PUBLIC_SOCKET_URL || "http://127.0.0.1:3001") + "/api/chat", 
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ message: userMessage.content }), // Kirim pesan pengguna
+          body: JSON.stringify({ message: userMessage.content }),
         }
       );
 
@@ -61,11 +112,11 @@ export default function ChatBot() {
         throw new Error("Network response was not ok");
       }
 
-      const botResponseData = await response.json(); // Harusnya { role: "assistant", content: "..." }
+      const botResponseData = await response.json(); 
 
       setMessages((prev) => [
         ...prev,
-        { ...botResponseData, timestamp: new Date() },
+        { ...botResponseData, timestamp: new Date() }, // Pastikan selalu gunakan 'new Date()'
       ]);
 
     } catch (error) {
@@ -89,6 +140,9 @@ export default function ChatBot() {
       handleSend();
     }
   };
+
+  // ... (Sisa kode untuk handleMouseDown, handleMouseMove, handleMouseUp, dll. tidak berubah) ...
+  // ... (Kode JSX untuk render juga tidak berubah) ...
 
   // Dragging handlers
   const handleMouseDown = (e) => {
@@ -314,7 +368,8 @@ export default function ChatBot() {
                       msg.role === "user" ? "text-white/70" : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
-                    {msg.timestamp.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+                    {/* Pastikan timestamp adalah objek Date yang valid sebelum memanggil toLocaleTimeString */}
+                    {msg.timestamp instanceof Date ? msg.timestamp.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : ""}
                   </p>
                 </div>
               </div>
