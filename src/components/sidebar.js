@@ -51,8 +51,8 @@ export default function Sidebar({ isOpen, onClose }) {
               </svg>
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Fish Monitor</h2>
-              <p className="text-xs text-gray-600 dark:text-gray-400">IoT Dashboard</p>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">SIKAT</h2>
+              <p className="text-xs text-gray-600 dark:text-gray-400">Sistem Informasi Kesegaran Ikan Terintegrasi</p>
             </div>
           </div>
         </div>
