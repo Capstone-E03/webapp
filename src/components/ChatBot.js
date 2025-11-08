@@ -3,49 +3,23 @@
 import { useState, useRef, useEffect } from "react";
 import { useSensorData } from "@/contexts/SensorDataContext";
 
-// --- PERUBAHAN DIMULAI DI SINI ---
-
-// 1. Definisikan pesan default di luar komponen
+// 1. Definisikan pesan default di luar komponen (Ini sudah benar)
 const defaultMessage = {
   role: "assistant",
-  content: "Halo! Saya asisten virtual Fish Monitor. Saya dapat membantu menjawab pertanyaan tentang monitoring kesegaran ikan dan data sensor. Ada yang bisa saya bantu?",
+  content: "Halo! Saya Nemo, asisten Fish Monitor Anda! 🐠 Saya di sini untuk membantu Anda 'menyelami' data kesegaran ikan. Ada yang bisa saya bantu?",
   timestamp: new Date(),
 };
 
-// 2. Buat fungsi untuk memuat state awal dari localStorage
-const loadInitialState = () => {
-  // Cek jika window (browser) tidak ada, misal saat server-side rendering
-  if (typeof window === "undefined") {
-    return [defaultMessage];
-  }
-  
-  try {
-    const savedHistory = localStorage.getItem("chatHistory");
-    if (!savedHistory) {
-      return [defaultMessage];
-    }
-    
-    const parsedHistory = JSON.parse(savedHistory);
-    
-    // Pastikan timestamp diubah kembali menjadi objek Date saat memuat
-    return parsedHistory.map(msg => ({
-      ...msg,
-      timestamp: new Date(msg.timestamp),
-    }));
-  } catch (error) {
-    console.error("Gagal memuat riwayat chat:", error);
-    return [defaultMessage]; // Kembali ke default jika ada error
-  }
-};
-
-// --- AKHIR PERUBAHAN INISIALISASI ---
+// 2. HAPUS FUNGSI 'loadInitialState' YANG LAMA
+// const loadInitialState = () => { ... }
 
 
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
   
-  // 3. Gunakan fungsi 'loadInitialState' untuk useState
-  const [messages, setMessages] = useState(loadInitialState);
+  // 3. (PERUBAHAN) Inisialisasi state HANYA dengan default.
+  //    Ini memastikan server render & client hydration PERTAMA kali SAMA.
+  const [messages, setMessages] = useState([defaultMessage]);
   
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -66,21 +40,38 @@ export default function ChatBot() {
     }
   }, [messages, isOpen]);
 
-  // --- PERUBAHAN DIMULAI DI SINI ---
+  // 4. (TAMBAHAN) Gunakan useEffect untuk memuat state dari localStorage HANYA di client.
+  //    Ini akan berjalan SETELAH render pertama (hidrasi) selesai.
+  useEffect(() => {
+    // Cek jika window (browser) ada
+    if (typeof window !== "undefined") {
+      try {
+        const savedHistory = localStorage.getItem("chatHistory");
+        if (savedHistory) {
+          const parsedHistory = JSON.parse(savedHistory);
+          // Pastikan timestamp diubah kembali menjadi objek Date
+          setMessages(parsedHistory.map(msg => ({
+            ...msg,
+            timestamp: new Date(msg.timestamp),
+          })));
+        }
+      } catch (error) {
+        console.error("Gagal memuat riwayat chat:", error);
+        // Jika gagal, state sudah benar (defaultMessage)
+      }
+    }
+  }, []); // [] = jalankan hook ini sekali saja saat komponen mount di client
 
-  // 4. Tambahkan useEffect baru untuk MENYIMPAN ke localStorage setiap kali 'messages' berubah
+  // 5. (TETAP SAMA) useEffect untuk MENYIMPAN ke localStorage setiap kali 'messages' berubah
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        // Kita simpan 'messages' setiap kali ada pembaruan
         localStorage.setItem("chatHistory", JSON.stringify(messages));
       } catch (error) {
         console.error("Gagal menyimpan riwayat chat:", error);
       }
     }
-  }, [messages]); // Dependensi array ini akan memicu penyimpanan setiap 'messages' berubah
-
-  // --- AKHIR PERUBAHAN ---
+  }, [messages]); // Dependensi ini akan memicu penyimpanan setiap 'messages' berubah
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -88,14 +79,14 @@ export default function ChatBot() {
     const userMessage = {
       role: "user",
       content: input,
-      timestamp: new Date(), // Pastikan selalu gunakan 'new Date()'
+      timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
-    // Memanggil API backend (Kode ini sudah benar dari langkah kita sebelumnya)
+    // Memanggil API backend (Kode ini sudah benar)
     try {
       const response = await fetch(
         (process.env.NEXT_PUBLIC_SOCKET_URL || "http://127.0.0.1:3001") + "/api/chat", 
@@ -116,7 +107,7 @@ export default function ChatBot() {
 
       setMessages((prev) => [
         ...prev,
-        { ...botResponseData, timestamp: new Date() }, // Pastikan selalu gunakan 'new Date()'
+        { ...botResponseData, timestamp: new Date() },
       ]);
 
     } catch (error) {
@@ -141,7 +132,7 @@ export default function ChatBot() {
     }
   };
 
-  // ... (Sisa kode untuk handleMouseDown, handleMouseMove, handleMouseUp, dll. tidak berubah) ...
+  // ... (Sisa kode untuk handleMouseDown, handleMouseMove, dll. tidak berubah) ...
   // ... (Kode JSX untuk render juga tidak berubah) ...
 
   // Dragging handlers
@@ -160,11 +151,9 @@ export default function ChatBot() {
       const newX = e.clientX - dragStart.x;
       const newY = e.clientY - dragStart.y;
 
-      // Get viewport dimensions
       const maxX = window.innerWidth - (chatPanelRef.current?.offsetWidth || 420);
       const maxY = window.innerHeight - (chatPanelRef.current?.offsetHeight || 450);
 
-      // Constrain position within viewport
       setPosition({
         x: Math.max(-maxX, Math.min(0, newX)),
         y: Math.max(-maxY, Math.min(0, newY)),
@@ -368,7 +357,6 @@ export default function ChatBot() {
                       msg.role === "user" ? "text-white/70" : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
-                    {/* Pastikan timestamp adalah objek Date yang valid sebelum memanggil toLocaleTimeString */}
                     {msg.timestamp instanceof Date ? msg.timestamp.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : ""}
                   </p>
                 </div>
