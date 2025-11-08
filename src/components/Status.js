@@ -121,6 +121,15 @@ const Status = () => {
   const preservationMap = useMemo(() => mapPreservation(data.preservation), [data.preservation]);
   const [now, setNow] = useState(new Date());
 
+  // Helper to get confidence level from fuzzy value
+  const getConfidenceLevel = (value) => {
+    if (value === null || value === undefined) return { label: "-", color: "text-gray-500" };
+    const val = parseFloat(value);
+    if (val >= 0.7) return { label: "Tinggi", color: "text-green-600" };
+    if (val >= 0.4) return { label: "Sedang", color: "text-yellow-600" };
+    return { label: "Rendah", color: "text-red-600" };
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       setNow(new Date());
@@ -155,11 +164,31 @@ const Status = () => {
               <span className={`text-2xl ${freshMap.valueColor}`}>{freshMap.icon}</span>
             </div>
             <p className={`text-3xl font-bold ${freshMap.valueColor} mb-2`}>{freshMap.label}</p>
-            <div className="flex items-center gap-2 text-xs">
+            <div className="flex items-center gap-2 text-xs mb-2">
               <span className={`px-2 py-1 ${freshMap.titleColor} bg-white bg-opacity-60 rounded font-medium`}>
                 MQ135 + MQ2
               </span>
             </div>
+            {data.freshValue !== null && data.freshValue !== undefined && (
+              <div className="mt-3 pt-3 border-t border-current border-opacity-20">
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-semibold ${freshMap.titleColor} opacity-80`}>
+                    Nilai Fuzzy
+                  </span>
+                  <span className={`text-sm font-bold ${freshMap.valueColor}`}>
+                    {parseFloat(data.freshValue).toFixed(1)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className={`text-xs font-semibold ${freshMap.titleColor} opacity-80`}>
+                    Kepercayaan
+                  </span>
+                  <span className={`text-xs font-bold ${getConfidenceLevel(data.freshValue).color}`}>
+                    {getConfidenceLevel(data.freshValue).label}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -173,11 +202,31 @@ const Status = () => {
               <span className={`text-2xl ${preservationMap.valueColor}`}>{preservationMap.icon}</span>
             </div>
             <p className={`text-3xl font-bold ${preservationMap.valueColor} mb-2`}>{preservationMap.label}</p>
-            <div className="flex items-center gap-2 text-xs">
+            <div className="flex items-center gap-2 text-xs mb-2">
               <span className={`px-2 py-1 ${preservationMap.titleColor} bg-white bg-opacity-60 rounded font-medium`}>
                 Temp + Humidity
               </span>
             </div>
+            {data.preservationValue !== null && data.preservationValue !== undefined && (
+              <div className="mt-3 pt-3 border-t border-current border-opacity-20">
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-semibold ${preservationMap.titleColor} opacity-80`}>
+                    Nilai Fuzzy
+                  </span>
+                  <span className={`text-sm font-bold ${preservationMap.valueColor}`}>
+                    {parseFloat(data.preservationValue).toFixed(1)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className={`text-xs font-semibold ${preservationMap.titleColor} opacity-80`}>
+                    Kepercayaan
+                  </span>
+                  <span className={`text-xs font-bold ${getConfidenceLevel(data.preservationValue).color}`}>
+                    {getConfidenceLevel(data.preservationValue).label}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -203,17 +252,19 @@ const Status = () => {
       </div>
 
       {/* AI Info Footer */}
-      <div className="mt-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+      <div className="mt-6 p-4 bg-purple-50 dark:bg-purple-900 dark:bg-opacity-20 border border-purple-200 dark:border-purple-700 rounded-lg">
         <div className="flex items-start gap-3">
-          <svg className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
           </svg>
           <div>
-            <h4 className="text-sm font-semibold text-purple-900 mb-1">Tentang Klasifikasi</h4>
-            <p className="text-xs text-purple-800 leading-relaxed">
+            <h4 className="text-sm font-semibold text-purple-900 dark:text-purple-200 mb-1">Tentang Klasifikasi</h4>
+            <p className="text-xs text-purple-800 dark:text-purple-300 leading-relaxed">
               Sistem menggunakan <strong>Fuzzy Logic</strong> yang berjalan di mikrokontroler STM32.
               <strong> Kesegaran</strong> dihitung dari kadar gas (NH₃ & CH₄).
               <strong> Penyimpanan</strong> dievaluasi dari suhu dan kelembaban lingkungan.
+              <strong> Nilai Fuzzy</strong> (0.0-1.0) menunjukkan tingkat keanggotaan klasifikasi:
+              ≥0.7 = Tinggi, 0.4-0.7 = Sedang, &lt;0.4 = Rendah.
             </p>
           </div>
         </div>

@@ -11,8 +11,10 @@ const defaultData = Object.freeze({
   suhu: "-",
   humidity: "-",
   ph: "-",
-  fresh: "-",      
+  fresh: "-",
+  freshValue: null,
   preservation: "-",
+  preservationValue: null,
 });
 
 const Ctx = createContext({
@@ -34,8 +36,10 @@ function normalize(msg) {
     suhu: p.T ?? p.suhu ?? "-",
     humidity: p.RH ?? p.humidity ?? "-",
     ph: p.pH ?? p.ph ?? "-",
-    fresh: p.fresh ?? "-",   
+    fresh: p.fresh ?? "-",
+    freshValue: p.freshValue ?? null,
     preservation: p.preservation ?? "-",
+    preservationValue: p.preservationValue ?? null,
   };
 }
 
@@ -96,7 +100,8 @@ export function SensorDataProvider({ children }) {
     const onFreshness = (msg) => {
       setData((prev) => ({
       ...prev,
-      fresh: msg?.fresh ?? msg?.message?.fresh ?? prev.fresh
+      fresh: msg?.fresh ?? msg?.message?.fresh ?? prev.fresh,
+      freshValue: msg?.freshValue ?? msg?.message?.freshValue ?? prev.freshValue
       }));
       setLastSeenAt(new Date());
       console.log("Received freshness data:", msg);
@@ -105,7 +110,8 @@ export function SensorDataProvider({ children }) {
     const onPreservation = (msg) => {
       setData((prev) => ({
       ...prev,
-      preservation: msg?.preservation ?? msg?.message?.preservation ?? prev.preservation
+      preservation: msg?.preservation ?? msg?.message?.preservation ?? prev.preservation,
+      preservationValue: msg?.preservationValue ?? msg?.message?.preservationValue ?? prev.preservationValue
       }));
       setLastSeenAt(new Date());
       console.log("Received preservation data:", msg);
