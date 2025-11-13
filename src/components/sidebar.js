@@ -45,10 +45,12 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* Header */}
         <div className="p-6 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+            <div className="aspect-square w-[2.8em] bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shrink-0">
+              <img 
+                src="/fishicon.png" 
+                alt="Fish Icon" 
+                className="w-[1.5em] h-[1.5em] object-contain" 
+              />
             </div>
             <div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">SIKAT</h2>
