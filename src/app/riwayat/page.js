@@ -1,9 +1,12 @@
 async function getHistory() {
+
+  const backendUrl = process.env.NEXT_PUBLIC_SOCKET_URL
+
   try {
     // Fetch both datasets in parallel 
     const [classRes, presRes] = await Promise.all([
-      fetch("http://localhost:3001/api/classifications", { cache: "no-store" }),
-      fetch("http://localhost:3001/api/preservations", { cache: "no-store" })
+      fetch(`${backendUrl}/api/classifications`, { cache: "no-store" }),
+      fetch(`${backendUrl}/api/preservations`, { cache: "no-store" })
     ]);
 
     if (!classRes.ok) throw new Error("Failed to fetch classifications");
