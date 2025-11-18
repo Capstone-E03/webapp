@@ -52,6 +52,50 @@ export function SensorDataProvider({ children }) {
   const [mqttConnectedAt, setMqttConnectedAt] = useState(null);
 
   const toastOnce = useRef({ up: false });
+  const previousStatus = useRef({ fresh: null, preservation: null });
+
+  // Helper function to get freshness label
+  const getFreshnessLabel = (code) => {
+    switch ((code || "").toUpperCase()) {
+      case "SS": return "Sangat Segar";
+      case "S": return "Segar";
+      case "KS": return "Kurang Segar";
+      case "B": return "Tidak Segar";
+      default: return null;
+    }
+  };
+
+  // Helper function to get preservation label
+  const getPreservationLabel = (code) => {
+    switch ((code || "").toUpperCase()) {
+      case "SB": return "Sangat Baik";
+      case "B": return "Baik";
+      case "KB": return "Kurang Baik";
+      case "BR": return "Buruk";
+      default: return null;
+    }
+  };
+
+  // Helper function to determine notification type based on status
+  const getNotificationType = (code, type) => {
+    if (type === "freshness") {
+      switch ((code || "").toUpperCase()) {
+        case "SS":
+        case "S": return "success";
+        case "KS": return "warning";
+        case "B": return "error";
+        default: return "info";
+      }
+    } else {
+      switch ((code || "").toUpperCase()) {
+        case "SB":
+        case "B": return "success";
+        case "KB": return "warning";
+        case "BR": return "error";
+        default: return "info";
+      }
+    }
+  };
 
   useEffect(() => {
     const socket = getSocket();
@@ -98,23 +142,81 @@ export function SensorDataProvider({ children }) {
     };
 
     const onFreshness = (msg) => {
+      const newFresh = msg?.fresh ?? msg?.message?.fresh ?? "-";
+      const newFreshValue = msg?.freshValue ?? msg?.message?.freshValue ?? null;
+
       setData((prev) => ({
-      ...prev,
-      fresh: msg?.fresh ?? msg?.message?.fresh ?? prev.fresh,
-      freshValue: msg?.freshValue ?? msg?.message?.freshValue ?? prev.freshValue
+        ...prev,
+        fresh: newFresh,
+        freshValue: newFreshValue
       }));
       setLastSeenAt(new Date());
       console.log("Received freshness data:", msg);
+
+      // Show notification if status changed
+      if (previousStatus.current.fresh !== null &&
+          previousStatus.current.fresh !== newFresh &&
+          newFresh !== "-") {
+        const label = getFreshnessLabel(newFresh);
+        const notifType = getNotificationType(newFresh, "freshness");
+
+        if (label) {
+          const message = `Kesegaran Ikan: ${label}`;
+          const options = {
+            duration: 4000,
+            icon: notifType === "success" ? "✓" : notifType === "warning" ? "⚠" : "✕"
+          };
+
+          if (notifType === "success") {
+            toast.success(message, options);
+          } else if (notifType === "warning") {
+            toast(message, { ...options, icon: "⚠", style: { background: "#FEF3C7", color: "#92400E" } });
+          } else {
+            toast.error(message, options);
+          }
+        }
+      }
+
+      previousStatus.current.fresh = newFresh;
     };
 
     const onPreservation = (msg) => {
+      const newPreservation = msg?.preservation ?? msg?.message?.preservation ?? "-";
+      const newPreservationValue = msg?.preservationValue ?? msg?.message?.preservationValue ?? null;
+
       setData((prev) => ({
-      ...prev,
-      preservation: msg?.preservation ?? msg?.message?.preservation ?? prev.preservation,
-      preservationValue: msg?.preservationValue ?? msg?.message?.preservationValue ?? prev.preservationValue
+        ...prev,
+        preservation: newPreservation,
+        preservationValue: newPreservationValue
       }));
       setLastSeenAt(new Date());
       console.log("Received preservation data:", msg);
+
+      // Show notification if status changed
+      if (previousStatus.current.preservation !== null &&
+          previousStatus.current.preservation !== newPreservation &&
+          newPreservation !== "-") {
+        const label = getPreservationLabel(newPreservation);
+        const notifType = getNotificationType(newPreservation, "preservation");
+
+        if (label) {
+          const message = `Kondisi Penyimpanan: ${label}`;
+          const options = {
+            duration: 4000,
+            icon: notifType === "success" ? "✓" : notifType === "warning" ? "⚠" : "✕"
+          };
+
+          if (notifType === "success") {
+            toast.success(message, options);
+          } else if (notifType === "warning") {
+            toast(message, { ...options, icon: "⚠", style: { background: "#FEF3C7", color: "#92400E" } });
+          } else {
+            toast.error(message, options);
+          }
+        }
+      }
+
+      previousStatus.current.preservation = newPreservation;
     };
 
     const onMqttStatus = (status) => {
